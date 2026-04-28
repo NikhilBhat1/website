@@ -3,13 +3,11 @@
   padding: 0;
   box-sizing: border-box;
 }
-
 html, body {
   width: 100%;
   height: 100%;
   min-height: 100vh;
 }
-
 body {
   background-color: #0d1b4b;
   background-attachment: fixed;
@@ -18,7 +16,6 @@ body {
   position: relative;
   overflow-x: hidden;
 }
-
 .dots {
   position: fixed;
   top: 0;
@@ -34,84 +31,23 @@ body {
   pointer-events: none;
   z-index: 0;
 }
-
 .content {
   position: relative;
   z-index: 2;
-}
-
-  #web-canvas {
-    position: fixed;
-    top: 0;
-    left:95.35%;
-    transform: translateX(-50%);
-    z-index: 999;
-    pointer-events: none;
-  }
-
-  #spiderman-img {
-    width: 110px;
-    position: fixed;
-    left: 95%;
-    transform: translateX(-50%);
-    top: 0;
-    z-index: 1000;
-    pointer-events: none;
-    filter: drop-shadow(0 10px 30px rgba(232, 33, 46, 0.4));
-    transition: none;
-  }
-
-  /* not used */
-  #spiderman-container {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-
-  .hero {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    color: white;
-    text-align: center;
-  }
-
-  .hero h1 {
-    font-size: 4rem;
-    font-weight: 900;
-    letter-spacing: 0.2em;
-    color: #e8212e;
-    text-shadow: 0 0 30px rgba(232, 33, 46, 0.5);
-    margin-bottom: 1rem;
-  }
-
-  .hero p {
-    font-size: 1.2rem;
-    color: #aaa;
-    max-width: 500px;
-  }
-
-  .scroll-hint {
-    margin-top: 2rem;
-    color: #555;
-    font-size: 0.9rem;
-    animation: bounce 2s infinite;
-  }
-
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(8px); }
-  }
-
-  .content {
   min-height: 200vh;
+}
+#web-canvas {
+  pointer-events: none;
+}
+#spiderman-img {
+  filter: drop-shadow(0 10px 30px rgba(232, 33, 46, 0.4));
+}
+#live2d-canvas {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 300px;
+  height: 450px;
+  z-index: 998;
+  pointer-events: none;
 }

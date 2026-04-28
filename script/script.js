@@ -1,73 +1,111 @@
-  const spiderman = document.getElementById('spiderman-img');
-  const canvas = document.getElementById('web-canvas');
-  const ctx = canvas.getContext('2d');
+const spiderman = document.getElementById('spiderman-img');
+const canvas = document.getElementById('web-canvas');
+const ctx = canvas.getContext('2d');
 
-  // Set canvas width fixed, height will be dynamic
-  canvas.width = 6;
+const CANVAS_WIDTH = 6;
+const WEB_X = 3;
+const OVERLAP = 60;
+const MIN_TOP = 0;
+const HANDS_X_FRACTION = 0.55;
+const HANDS_Y_FRACTION = 0.35;
+const LOAD_ANIM_DURATION = 2000;
 
-  const IMG_HEIGHT = 180; // approximate rendered height of image
-  const ATTACHMENT_OFFSET = -10; // px from top of image (feet of upside-down spidey)
+let animating = true;
+let animStart = null;
 
-  function updateSpiderman() {
-    const scrollY = window.scrollY;
-    const maxScroll = document.body.scrollHeight - window.innerHeight;
-    const progress = Math.min(scrollY / maxScroll, 1);
+canvas.width = CANVAS_WIDTH;
+canvas.style.position = 'fixed';
+canvas.style.top = '0';
+canvas.style.zIndex = '999';
+canvas.style.pointerEvents = 'none';
+canvas.style.width = CANVAS_WIDTH + 'px';
 
-    // Spiderman top position: starts so feet are at top (negative offset),
-    // descends based on scroll. Max descent = 70% of viewport
-    const maxDescent = window.innerHeight * 0.75;
-    const topPos = 0 + ATTACHMENT_OFFSET + (progress/2 * maxDescent);
+spiderman.style.position = 'fixed';
+spiderman.style.right = '20px';
+spiderman.style.width = '110px';
+spiderman.style.zIndex = '1000';
+spiderman.style.pointerEvents = 'none';
 
-    spiderman.style.top = topPos + 'px';
+function easeOutBounce(t) {
+  if (t < 1 / 2.75) return 7.5625 * t * t;
+  else if (t < 2 / 2.75) { t -= 1.5 / 2.75; return 7.5625 * t * t + 0.75; }
+  else if (t < 2.5 / 2.75) { t -= 2.25 / 2.75; return 7.5625 * t * t + 0.9375; }
+  else { t -= 2.625 / 2.75; return 7.5625 * t * t + 0.984375; }
+}
 
-    // Web: draw from 0 (page top) to the attachment point of image (top of img = topPos, feet at top = topPos)
-    // The web attaches where the legs are = topPos + ATTACHMENT_OFFSET from top of img
-    //const webBottom = Math.max(0, topPos + ATTACHMENT_OFFSET);
-    const webBottom = Math.max(0, topPos + ATTACHMENT_OFFSET +80);
-    canvas.height = Math.max(1, webBottom);
-    canvas.style.height = canvas.height + 'px';
+function getScrollDescent() {
+  const scrollY = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  const progress = Math.min(scrollY / maxScroll, 1);
+  const maxDescent = window.innerHeight * 0.75;
+  const initialDescent = MIN_TOP + OVERLAP;
+  return initialDescent + (progress / 2) * maxDescent;
+}
 
-    // Draw the web line
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function drawWeb(descent) {
+  // Allow negative — image goes above viewport (hidden by browser overflow)
+  spiderman.style.top = (descent - OVERLAP) + 'px';
 
-    if (webBottom > 0) {
-      // Draw a slightly wavy white web line
-      ctx.beginPath();
-      ctx.moveTo(3, 0);
+  const rect = spiderman.getBoundingClientRect();
+  const handsX = rect.left + rect.width * HANDS_X_FRACTION;
+  const handsY = rect.top + rect.height * HANDS_Y_FRACTION;
 
-      // Add slight waviness
-      const segments = Math.floor(webBottom / 20);
-      for (let i = 1; i <= segments; i++) {
-        const y = (i / segments) * webBottom;
-        const wave = (i % 2 === 0) ? 1.5 : -1.5;
-        ctx.lineTo(3 + wave, y);
-      }
-      ctx.lineTo(3, webBottom);
+  canvas.style.left = (handsX - WEB_X) + 'px';
 
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.lineWidth = 2;
-      ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
-      ctx.shadowBlur = 4;
-      ctx.stroke();
+  // Only draw web if hands are visible (handsY > 0)
+  const webHeight = handsY;
+  canvas.height = Math.max(1, webHeight);
+  canvas.style.height = Math.max(1, webHeight) + 'px';
 
-      // Add a subtle secondary web strand
-      ctx.beginPath();
-      ctx.moveTo(3, 0);
-      ctx.lineTo(3, webBottom);
-      ctx.strokeStyle = 'rgba(220, 220, 255, 0.3)';
-      ctx.lineWidth = 1;
-      ctx.shadowBlur = 0;
-      ctx.stroke();
-      ctx.beginPath();
-      
-    }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (webHeight > 1) {
+    ctx.beginPath();
+    ctx.moveTo(WEB_X, 0);
+    ctx.lineTo(WEB_X, webHeight);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+    ctx.shadowBlur = 4;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(WEB_X, 0);
+    ctx.lineTo(WEB_X, webHeight);
+    ctx.strokeStyle = 'rgba(220, 220, 255, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.shadowBlur = 0;
+    ctx.stroke();
   }
+}
 
-  // Initial render
-  updateSpiderman();
+function animateLoad(timestamp) {
+  if (!animStart) animStart = timestamp;
+  const elapsed = timestamp - animStart;
+  const t = Math.min(elapsed / LOAD_ANIM_DURATION, 1);
 
-  // Update on scroll
-  window.addEventListener('scroll', updateSpiderman, { passive: true });
+  const targetDescent = getScrollDescent();
 
-  // Handle resize
-  window.addEventListener('resize', updateSpiderman, { passive: true });
+  // Start fully hidden above viewport
+  const startDescent = -300;
+  const currentDescent = startDescent + easeOutBounce(t) * (targetDescent - startDescent);
+
+  drawWeb(currentDescent);
+
+  if (t < 1) {
+    requestAnimationFrame(animateLoad);
+  } else {
+    animating = false;
+    drawWeb(targetDescent);
+  }
+}
+
+function updateSpiderman() {
+  if (animating) return;
+  drawWeb(getScrollDescent());
+}
+
+requestAnimationFrame(animateLoad);
+
+window.addEventListener('scroll', updateSpiderman, { passive: true });
+window.addEventListener('resize', updateSpiderman, { passive: true });
