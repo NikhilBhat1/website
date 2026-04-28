@@ -3,7 +3,7 @@
     "Name": "Sparkle",
     "ModelID": "3d3d9a8f714942f7891f5108188501f1",
     "FileReferences": {
-        "Icon": "%AMO`]YK]ADM4_0N[H1G_59.png",
+        "Icon": "exp1.png",
         "Model": "Sparkle.model3.json",
         "IdleAnimation": "",
         "IdleAnimationWhenTrackingLost": ""
@@ -570,7 +570,7 @@
             "HotkeyID": "a5dafce8f2f348a198811685cef018d1",
             "Name": "手姿势切换",
             "Action": "ToggleExpression",
-            "File": "手姿势切换.exp3.json",
+            "File": "exp2.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -639,7 +639,7 @@
             "HotkeyID": "1021542213ed41aaa140e67327c910d6",
             "Name": "腿切换",
             "Action": "ToggleExpression",
-            "File": "腿切换.exp3.json",
+            "File": "exp3.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -708,7 +708,7 @@
             "HotkeyID": "6107b3e7bfe547b6b6ac99ac9cbeaf56",
             "Name": "高光隐藏",
             "Action": "ToggleExpression",
-            "File": "高光隐藏.exp3.json",
+            "File": "exp4.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
