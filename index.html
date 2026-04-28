@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Site</title>
+  <title>Blaze Portfolio</title>
   <link rel="stylesheet" href="./css/style.css"/>
 </head>
 <body>
@@ -11,13 +11,78 @@
   <img id="spiderman-img" src="./assets/spiderman.png">
   <canvas id="live2d-canvas"></canvas>
   <div class="dots"></div>
-  <div class="content">
-    <!-- Your content goes here -->
+
+  <div class="top-left">
+    <img src="./assets/exp1.png" alt="profile" id="profile-img"/>
   </div>
+
+  <div class="name-wrapper">
+    <span id="typed-name"></span><span class="cursor" id="cursor"></span>
+  </div>
+
+  <div class="tagline" id="tagline">
+    <span id="typed-tag"></span><span class="cursor" id="cursor2"></span>
+  </div>
+
+  <div class="content"></div>
+
   <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.10/browser/pixi.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
   <script src="./script/script.js"></script>
   <script src="./script/live2d.js"></script>
+
+  <script>
+    const nameText = 'Blaze';
+    const tagText = 'Gamer';
+    const nameEl = document.getElementById('typed-name');
+    const tagEl = document.getElementById('typed-tag');
+    const cursor1 = document.getElementById('cursor');
+    const cursor2 = document.getElementById('cursor2');
+
+    // Hide cursor2 initially without removing from DOM
+    cursor2.style.visibility = 'hidden';
+    cursor2.style.opacity = '0';
+
+    function blinkThenHide(cursor, callback) {
+      let blinks = 0;
+      const blink = setInterval(() => {
+        cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
+        blinks++;
+        if (blinks >= 6) {
+          clearInterval(blink);
+          cursor.style.visibility = 'hidden';
+          cursor.style.opacity = '0';
+          if (callback) callback();
+        }
+      }, 300);
+    }
+
+    function typeText(el, text, cursor, callback) {
+      let i = 0;
+      cursor.style.visibility = 'visible';
+      cursor.style.opacity = '1';
+
+      function typeChar() {
+        if (i < text.length) {
+          el.textContent += text[i];
+          i++;
+          setTimeout(typeChar, 120);
+        } else {
+          blinkThenHide(cursor, callback);
+        }
+      }
+
+      setTimeout(typeChar, 50);
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        typeText(nameEl, nameText, cursor1, () => {
+          typeText(tagEl, tagText, cursor2, null);
+        });
+      }, 500);
+    });
+  </script>
 </body>
 </html>
