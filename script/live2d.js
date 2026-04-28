@@ -1,20 +1,23 @@
 window.addEventListener('load', () => {
-  const { Live2DModel } = PIXI.live2d;
-
+  const Live2DModel = window.PIXI.live2d.Live2DModel;
   const app = new PIXI.Application({
     view: document.getElementById('live2d-canvas'),
     transparent: true,
     autoStart: true,
-    width: 300,
-    height: 450,
+    width: 400,
+    height: 600,
+    backgroundAlpha: 0,
   });
 
   Live2DModel.from('./assets/Sparkle/Sparkle.model3.json').then(model => {
     app.stage.addChild(model);
 
-    model.scale.set(0.12);
-    model.x = 150;
-    model.y = 450;
+    model.scale.set(0.07);
+    model.x = 120;
+    model.y = 300;
+
+    // Disable motion manager
+    model.internalModel.motionManager.update = () => false;
 
     let targetX = 0;
     let targetY = 0;
@@ -32,12 +35,20 @@ window.addEventListener('load', () => {
 
       const core = model.internalModel.coreModel;
 
-      core.setParameterValueById('ParamEyeBallX', currentX);
-      core.setParameterValueById('ParamEyeBallY', -currentY);
-      core.setParameterValueById('ParamAngleX', currentX * 30);
-      core.setParameterValueById('ParamAngleY', -currentY * 20);
-      core.setParameterValueById('ParamAngleZ', currentX * -10);
-      core.setParameterValueById('ParamBodyAngleX', currentX * 8);
+      core.setParameterValueById('Param169', currentX * 30);
+      core.setParameterValueById('Param252', -currentY * 30);
+      core.setParameterValueById('Param253', currentX * -10);
+      core.setParameterValueById('ParamBodyAngleX2', currentX * 10);
+      core.setParameterValueById('ParamBodyAngleY2', -currentY * 10);
+      core.setParameterValueById('ParamBodyAngleZ2', currentX * -5);
+
+      // Increased eye movement range
+      core.setParameterValueById('ParamEyeBallX', currentX * 3);
+      core.setParameterValueById('ParamEyeBallY', -currentY * 3);
+
+      core.setParameterValueById('ParamEyeLOpen', 1);
+      core.setParameterValueById('ParamEyeROpen', 1);
+      core.setParameterValueById('ParamBreath', Math.sin(Date.now() / 1000) * 0.5 + 0.5);
     });
 
   }).catch(err => {
